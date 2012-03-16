@@ -49,7 +49,7 @@ NSMutableDictionary *imageCache = nil;
     NSString *extension = [filename pathExtension];
     NSString *bareFilename = [filename stringByDeletingPathExtension];
 
-    return [home stringByAppendingPathComponent:[[bareFilename stringByAppendingString:@"@mac"] stringByAppendingPathExtension:extension]];
+    return [home stringByAppendingPathComponent:[[bareFilename stringByAppendingString:@"~mac"] stringByAppendingPathExtension:extension]];
 }
 
 + (NSString *)_pathForFile:(NSString *)path
