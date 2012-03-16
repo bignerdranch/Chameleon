@@ -38,6 +38,54 @@
 @implementation UIKitView
 @synthesize UIScreen=_screen;
 
+@synthesize draggingDelegate;
+
+- (void)setDraggingDelegate:(id<UIKitViewDraggingProtocol>)d
+{
+    [self unregisterDraggedTypes];
+    
+    draggingDelegate = d;
+    
+    if (draggingDelegate)
+        [self registerForDraggedTypes:[draggingDelegate draggedTypes]];
+}
+
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
+{
+    if ([draggingDelegate respondsToSelector:@selector(draggingEntered:)])
+        return [draggingDelegate draggingEntered:sender];
+    else
+        return NSDragOperationNone;
+}
+
+- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
+{
+    if ([draggingDelegate respondsToSelector:@selector(draggingUpdated:)])
+        return [draggingDelegate draggingUpdated:sender];
+    else
+        return NSDragOperationNone;
+}
+
+- (void)draggingExited:(id < NSDraggingInfo >)sender
+{
+    if ([draggingDelegate respondsToSelector:@selector(draggingExited:)])
+        [draggingDelegate draggingExited:sender];
+}
+
+- (void)draggingEnded:(id < NSDraggingInfo >)sender
+{
+    if ([draggingDelegate respondsToSelector:@selector(draggingEnded:)])
+        [draggingDelegate draggingEnded:sender];
+}
+
+- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
+{
+    if ([draggingDelegate respondsToSelector:@selector(prepareForDragOperation:)])
+        return [draggingDelegate prepareForDragOperation:sender];
+    else
+        return NO;
+}
+
 - (void)configureLayers
 {
     [self setWantsLayer:YES];

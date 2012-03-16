@@ -32,6 +32,15 @@
 
 @class UIScreen, UIWindow;
 
+
+@protocol UIKitViewDraggingProtocol <NSDraggingDestination>
+
+@required
+- (NSArray *)draggedTypes;
+
+@end
+
+
 @interface UIKitView : NSView {
     UIScreen *_screen;
     UIWindow *_mainWindow;
@@ -62,5 +71,7 @@
 // a UIKitView owns a single UIScreen. when the UIKitView is part of an NSWindow hierarchy, the UIScreen appears as a connected screen in
 // [UIScreen screens], etc.
 @property (nonatomic, retain, readonly) UIScreen *UIScreen;
+
+@property (nonatomic, assign) id<UIKitViewDraggingProtocol> draggingDelegate;
 
 @end
