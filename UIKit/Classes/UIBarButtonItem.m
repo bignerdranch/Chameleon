@@ -95,4 +95,12 @@
     return _isSystemItem? nil : _customView;
 }
 
+- (void)setEnabled:(BOOL)yesOrNo
+{
+    [super setEnabled:yesOrNo];
+    
+    if ([_customView respondsToSelector:@selector(setEnabled:)])
+        [(id)_customView setEnabled:yesOrNo];
+}
+
 @end
