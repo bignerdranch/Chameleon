@@ -586,7 +586,7 @@ static BOOL _animationsEnabled = YES;
          bottom                     => y = floor(y)
 
          */
-
+        
         if (hasAutoresizingFor(UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin)) {
             frame.origin.y = floorf(frame.origin.y + (frame.origin.y / oldSize.height * delta.height));
             frame.size.height = floorf(frame.size.height + (frame.size.height / oldSize.height * delta.height));
@@ -597,7 +597,7 @@ static BOOL _animationsEnabled = YES;
         } else if (hasAutoresizingFor(UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleHeight)) {
             frame.size.height = floorf(frame.size.height + (frame.size.height / (oldSize.height - frame.origin.y) * delta.height));
         } else if (hasAutoresizingFor(UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleTopMargin)) {
-            frame.origin.y = floorf(frame.origin.y + (delta.height / 2.f));
+            frame.origin.y = frame.origin.y + (delta.height / 2.0);
         } else if (hasAutoresizingFor(UIViewAutoresizingFlexibleHeight)) {
             frame.size.height = floorf(frame.size.height + delta.height);
         } else if (hasAutoresizingFor(UIViewAutoresizingFlexibleTopMargin)) {

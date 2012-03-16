@@ -202,4 +202,6 @@ typedef NSUInteger UIViewAnimationOptions;
 @property (nonatomic, getter=isExclusiveTouch) BOOL exclusiveTouch; // state is maintained, but it has no effect
 @property (nonatomic,copy) NSArray *gestureRecognizers;
 
+- (void)_superviewSizeDidChangeFrom:(CGSize)oldSize to:(CGSize)newSize;
+
 @end
