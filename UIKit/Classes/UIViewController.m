@@ -115,6 +115,7 @@
 - (void)loadView
 {
     self.view = [[[UIView alloc] initWithFrame:CGRectMake(0,0,320,480)] autorelease];
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 }
 
 - (void)viewDidLoad
