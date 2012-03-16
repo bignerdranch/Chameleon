@@ -62,6 +62,7 @@ typedef enum {
 } UITableViewCellEditingStyle;
 
 @class UITableViewCellSeparator, UILabel, UIImageView;
+@class UIButton;
 
 @interface UITableViewCell : UIView {
 @private
@@ -84,6 +85,10 @@ typedef enum {
     BOOL _showingDeleteConfirmation;
     NSString *_reuseIdentifier;
     CGFloat _indentationWidth;
+    
+    UIButton *deleteButton;
+    UIButton *dragButton;
+    CALayer *dragLayer;
 }
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier;

@@ -64,6 +64,9 @@ extern NSString *const UITableViewIndexSearch;
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath;
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath;
+
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath;
+
 @end
 
 typedef enum {
@@ -180,5 +183,10 @@ typedef enum {
 @property (nonatomic, getter=isEditing) BOOL editing;
 @property (nonatomic) CGFloat sectionHeaderHeight;
 @property (nonatomic) CGFloat sectionFooterHeight;
+
+@property (nonatomic, retain) NSIndexPath *proposedSelection;
+
+@property (nonatomic, retain) NSIndexPath *dragSelection;
+@property (nonatomic, retain) NSIndexPath *proposedDrop;
 
 @end

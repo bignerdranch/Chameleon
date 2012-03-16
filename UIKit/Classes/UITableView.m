@@ -57,6 +57,9 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
 @synthesize allowsSelectionDuringEditing=_allowsSelectionDuringEditing;
 @dynamic delegate;
 
+@synthesize proposedSelection;
+@synthesize dragSelection, proposedDrop;
+
 - (id)initWithFrame:(CGRect)frame
 {
     return [self initWithFrame:frame style:UITableViewStylePlain];
@@ -293,10 +296,22 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
                         [_cachedCells setObject:cell forKey:indexPath];
                         [availableCells removeObjectForKey:indexPath];
                         cell.selected = [_selectedRow isEqual:indexPath];
+                        if (proposedDrop) {
+                            if (dragSelection.section < indexPath.section || (dragSelection.section == indexPath.section && dragSelection.row < indexPath.row))
+                                rowRect.origin.y -= self.rowHeight;
+                            if (proposedDrop.section < indexPath.section || (indexPath.row < dragSelection.row && proposedDrop.section == indexPath.section && proposedDrop.row <= indexPath.row) || (proposedDrop.section == indexPath.section && proposedDrop.row < indexPath.row))
+                                rowRect.origin.y += self.rowHeight;
+                        }
                         cell.frame = rowRect;
                         cell.backgroundColor = self.backgroundColor;
+                        cell.editing = _editing;
                         [cell _setSeparatorStyle:_separatorStyle color:_separatorColor];
                         [self addSubview:cell];
+                        
+                        if (dragSelection && indexPath.section == dragSelection.section && indexPath.row == dragSelection.row)
+                            cell.alpha = 0.0;
+                        else
+                            cell.alpha = 1.0;
                     }
                 }
             }
@@ -335,6 +350,24 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
         tableFooterFrame.size.width = boundsSize.width;
         _tableFooterView.frame = tableFooterFrame;
     }
+}
+
+- (void)setProposedDrop:(NSIndexPath *)ip
+{
+    [ip retain];
+    [proposedDrop release];
+    proposedDrop = ip;
+    
+    if (proposedDrop) {
+        [UIView animateWithDuration:0.2
+                              delay:0.0
+                            options:UIViewAnimationCurveEaseInOut
+                         animations:^{
+                             [self _layoutTableView];
+                         }
+                         completion:nil];
+    } else
+        [self _layoutTableView];
 }
 
 - (CGRect)_CGRectFromVerticalOffset:(CGFloat)offset height:(CGFloat)height
@@ -679,9 +712,19 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
     return nil;
 }
 
-- (void)setEditing:(BOOL)editing animated:(BOOL)animate
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated
 {
+    [self _layoutTableView];
     _editing = editing;
+    if (animated) {
+        [UIView animateWithDuration:0.3
+                              delay:0.0
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^{
+                             [self _layoutTableView];
+                         }
+                         completion:nil];
+    }
 }
 
 - (void)setEditing:(BOOL)editing
@@ -715,34 +758,46 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
     CGPoint location = [touch locationInView:self];
     NSIndexPath *touchedRow = [self indexPathForRowAtPoint:location];
 
-    if (touchedRow) {
-        NSIndexPath *selectedRow = [self indexPathForSelectedRow];
+    if (touchedRow)
+        self.proposedSelection = touchedRow;
+}
 
-        if (selectedRow) {
-            NSIndexPath *rowToDeselect = selectedRow;
-            
-            if (_delegateHas.willDeselectRowAtIndexPath) {
-                rowToDeselect = [_delegate tableView:self willDeselectRowAtIndexPath:rowToDeselect];
-            }
-            
-            [self deselectRowAtIndexPath:rowToDeselect animated:NO];
-            
-            if (_delegateHas.didDeselectRowAtIndexPath) {
-                [_delegate tableView:self didDeselectRowAtIndexPath:rowToDeselect];
-            }
-        }
-
-        NSIndexPath *rowToSelect = touchedRow;
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch *touch = [touches anyObject];
+    CGPoint location = [touch locationInView:self];
+    NSIndexPath *touchedRow = [self indexPathForRowAtPoint:location];
+    if (!touchedRow || ![touchedRow isEqual:proposedSelection]) {
+        self.proposedSelection = nil;
+        return;
+    }
+    
+    NSIndexPath *selectedRow = [self indexPathForSelectedRow];
+    
+    if (selectedRow) {
+        NSIndexPath *rowToDeselect = selectedRow;
         
-        if (_delegateHas.willSelectRowAtIndexPath) {
-            rowToSelect = [_delegate tableView:self willSelectRowAtIndexPath:rowToSelect];
+        if (_delegateHas.willDeselectRowAtIndexPath) {
+            rowToDeselect = [_delegate tableView:self willDeselectRowAtIndexPath:rowToDeselect];
         }
-
-        [self selectRowAtIndexPath:rowToSelect animated:NO scrollPosition:UITableViewScrollPositionNone];
         
-        if (_delegateHas.didSelectRowAtIndexPath) {
-            [_delegate tableView:self didSelectRowAtIndexPath:rowToSelect];
+        [self deselectRowAtIndexPath:rowToDeselect animated:NO];
+        
+        if (_delegateHas.didDeselectRowAtIndexPath) {
+            [_delegate tableView:self didDeselectRowAtIndexPath:rowToDeselect];
         }
+    }
+    
+    NSIndexPath *rowToSelect = touchedRow;
+    
+    if (_delegateHas.willSelectRowAtIndexPath) {
+        rowToSelect = [_delegate tableView:self willSelectRowAtIndexPath:rowToSelect];
+    }
+    
+    [self selectRowAtIndexPath:rowToSelect animated:NO scrollPosition:UITableViewScrollPositionNone];
+    
+    if (_delegateHas.didSelectRowAtIndexPath) {
+        [_delegate tableView:self didSelectRowAtIndexPath:rowToSelect];
     }
 }
 

@@ -33,6 +33,13 @@
 #import "UILabel.h"
 #import "UIImageView.h"
 #import "UIFont.h"
+#import "UITableView.h"
+#import "UIImage+UIPrivate.h"
+#import "UIButton.h"
+#import <QuartzCore/QuartzCore.h>
+#import "UIGraphics.h"
+#import "UITouch.h"
+#import "UIBezierPath.h"
 
 extern CGFloat _UITableViewDefaultRowHeight;
 
@@ -82,6 +89,12 @@ extern CGFloat _UITableViewDefaultRowHeight;
     [super dealloc];
 }
 
+- (void)setEditing:(BOOL)yesOrNo
+{
+    _editing = yesOrNo;
+    [self setNeedsLayout];
+}
+
 - (void)layoutSubviews
 {
     [super layoutSubviews];
@@ -93,7 +106,7 @@ extern CGFloat _UITableViewDefaultRowHeight;
     CGRect accessoryRect = CGRectMake(bounds.size.width,0,0,0);
 
     if(_accessoryView) {
-        accessoryRect.size = [_accessoryView sizeThatFits: bounds.size];
+        accessoryRect.size = _accessoryView.bounds.size; //[_accessoryView sizeThatFits: bounds.size];
         accessoryRect.origin.x = bounds.size.width - accessoryRect.size.width;
         accessoryRect.origin.y = round(0.5*(bounds.size.height - accessoryRect.size.height));
         _accessoryView.frame = accessoryRect;
@@ -103,6 +116,43 @@ extern CGFloat _UITableViewDefaultRowHeight;
     
     _backgroundView.frame = contentFrame;
     _selectedBackgroundView.frame = contentFrame;
+    
+    if (_editing) {
+        UITableView *tv = (UITableView *)self.superview;
+        
+        if ([tv.dataSource respondsToSelector:@selector(tableView:commitEditingStyle:forRowAtIndexPath:)]) {
+            contentFrame.origin.x += 44;
+            contentFrame.size.width -= 44;
+            
+            if (!deleteButton) {
+                UIImage *img = [UIImage _frameworkImageWithName:@"<UITableViewCell> remove.png" leftCapWidth:0 topCapHeight:0];
+                deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+                [deleteButton setImage:img forState:UIControlStateNormal];
+                [deleteButton addTarget:self action:@selector(delete:) forControlEvents:UIControlEventTouchUpInside];
+                [self addSubview:deleteButton];
+            }
+            deleteButton.frame = CGRectMake(0, 0, 44, bounds.size.height);
+        }
+        
+        if ([tv.dataSource respondsToSelector:@selector(tableView:moveRowAtIndexPath:toIndexPath:)]) {
+            contentFrame.size.width -= 44;
+            
+            if (!dragButton) {
+                UIImage *img = [UIImage _frameworkImageWithName:@"<UITableViewCell> reorder.png" leftCapWidth:0 topCapHeight:0];
+                dragButton = [UIButton buttonWithType:UIButtonTypeCustom];
+                [dragButton setImage:img forState:UIControlStateNormal];
+                [dragButton addTarget:self action:@selector(drag:forEvent:) forControlEvents:UIControlEventTouchDragInside];
+                [dragButton addTarget:self action:@selector(drag:forEvent:) forControlEvents:UIControlEventTouchDragOutside];
+                [dragButton addTarget:self action:@selector(drop:forEvent:) forControlEvents:UIControlEventTouchUpInside];
+                [dragButton addTarget:self action:@selector(drop:forEvent:) forControlEvents:UIControlEventTouchUpOutside];
+                [self addSubview:dragButton];
+            }
+            dragButton.frame = CGRectMake(bounds.size.width-44, 0, 44, bounds.size.height);
+        }
+    } else {
+        [deleteButton removeFromSuperview]; deleteButton = nil;
+        [dragButton removeFromSuperview]; dragButton = nil;
+    }
     _contentView.frame = contentFrame;
     
     [self sendSubviewToBack:_selectedBackgroundView];
@@ -127,7 +177,90 @@ extern CGFloat _UITableViewDefaultRowHeight;
         textRect.origin = CGPointMake(padding+imageWidth+padding,0);
         textRect.size = CGSizeMake(MAX(0,contentFrame.size.width-textRect.origin.x-padding),contentFrame.size.height);
         _textLabel.frame = textRect;
+    } else if (_style == UITableViewCellStyleValue1) {
+        const CGFloat padding = 5;
+        
+        const BOOL showImage = (_imageView.image != nil);
+        const CGFloat imageWidth = (showImage? 30:0);
+        
+        _imageView.frame = CGRectMake(padding,0,imageWidth,contentFrame.size.height);
+        
+        CGRect textRect;
+        textRect.origin = CGPointMake(padding+imageWidth+padding,0);
+        textRect.size = CGSizeMake(MAX(0,contentFrame.size.width-textRect.origin.x-padding),contentFrame.size.height);
+        _textLabel.frame = textRect;
+        
+        textRect.origin.x = textRect.origin.x+textRect.size.width-50;
+        textRect.size.width = 50;
+        _detailTextLabel.frame = textRect;
     }
+}
+
+- (void)delete:(id)sender
+{
+    UITableView *tv = (UITableView *)self.superview;
+    [tv.dataSource tableView:tv commitEditingStyle:UITableViewCellEditingStyleDelete forRowAtIndexPath:[tv indexPathForCell:self]];
+}
+
+- (void)drag:(UIButton *)sender forEvent:(UIEvent *)event 
+{
+    if (!dragLayer) {
+        dragLayer = [CALayer layer];
+        dragLayer.opacity = 0.9;
+        dragLayer.shadowPath = [[UIBezierPath bezierPathWithRect:self.bounds] CGPath];
+        dragLayer.shadowOpacity = 0.7;
+        dragLayer.shadowOffset = CGSizeMake(0, 1);
+        dragLayer.bounds = self.bounds;
+        CGPoint p = [(UITouch *)[event.allTouches anyObject] locationInView:self];
+        dragLayer.anchorPoint = CGPointMake(p.x/self.bounds.size.width, p.y/self.bounds.size.height);
+        
+        UITableView *tv = (UITableView *)self.superview;
+        p = [(UITouch *)[event.allTouches anyObject] locationInView:tv];
+        dragLayer.position = p;
+        tv.dragSelection = [tv indexPathForRowAtPoint:p];
+        
+        UIGraphicsBeginImageContext(self.bounds.size);
+        CGContextRef gctx = UIGraphicsGetCurrentContext();
+        [self.layer renderInContext:gctx];
+        dragLayer.contents = (id)[UIGraphicsGetImageFromCurrentImageContext() CGImage];
+        UIGraphicsEndImageContext();
+        
+        [self.layer.superlayer addSublayer:dragLayer];
+    } else {
+        UITableView *tv = (UITableView *)self.superview;
+        
+        CGPoint p = [(UITouch *)[event.allTouches anyObject] locationInView:tv];
+        
+        NSIndexPath *indexPath = [tv indexPathForRowAtPoint:p];
+        if (indexPath) {
+            tv.proposedDrop = indexPath;
+            
+            [CATransaction begin];
+            [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+            
+            p.x = dragLayer.position.x;
+            dragLayer.position = p;
+            [CATransaction commit];
+            
+            [tv scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionNone animated:YES];
+        }
+    }
+}
+
+- (void)drop:(UIButton *)sender forEvent:(UIEvent *)event
+{
+    UITableView *tv = (UITableView *)self.superview;
+    
+    NSIndexPath *from = tv.dragSelection;
+    NSIndexPath *to = tv.proposedDrop;
+    if (!(from.section == to.section && from.row == to.row))
+        [tv.dataSource tableView:tv moveRowAtIndexPath:from toIndexPath:to];
+    
+    tv.dragSelection = nil;
+    tv.proposedDrop = nil;
+    
+    [dragLayer removeFromSuperlayer];
+    dragLayer = nil;
 }
 
 - (UIView *)contentView
@@ -166,6 +299,22 @@ extern CGFloat _UITableViewDefaultRowHeight;
     }
     
     return _textLabel;
+}
+
+- (UILabel *)detailTextLabel
+{
+    if (!_detailTextLabel) {
+        _detailTextLabel = [[UILabel alloc] init];
+        _detailTextLabel.backgroundColor = [UIColor clearColor];
+        _detailTextLabel.textColor = [UIColor colorWithRed:0.22 green:0.33 blue:0.53 alpha:1];
+        _detailTextLabel.highlightedTextColor = [UIColor whiteColor];
+        _detailTextLabel.font = [UIFont systemFontOfSize:17];
+        _detailTextLabel.textAlignment = UITextAlignmentRight;
+        [self.contentView addSubview:_detailTextLabel];
+        [self layoutIfNeeded];
+    }
+    
+    return _detailTextLabel;
 }
 
 - (void)_setSeparatorStyle:(UITableViewCellSeparatorStyle)theStyle color:(UIColor *)theColor
