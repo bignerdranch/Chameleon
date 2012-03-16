@@ -162,7 +162,11 @@ NSString *const UITextViewTextDidEndEditingNotification = @"UITextViewTextDidEnd
 
 - (BOOL)becomeFirstResponder
 {
+    if (!self.editable)
+        return NO;
+    
     if ([super becomeFirstResponder] ){
+        [self performSelector:@selector(_textDidBeginEditing)];
         return [_textLayer becomeFirstResponder];
     } else {
         return NO;

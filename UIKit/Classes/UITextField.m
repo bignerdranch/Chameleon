@@ -371,7 +371,11 @@ NSString *const UITextFieldTextDidEndEditingNotification = @"UITextFieldTextDidE
 
 - (BOOL)becomeFirstResponder
 {
+    if (!self.enabled)
+        return NO;
+    
     if ([super becomeFirstResponder]) {
+        [self performSelector:@selector(_textDidBeginEditing)];
         return [_textLayer becomeFirstResponder];
     } else {
         return NO;
