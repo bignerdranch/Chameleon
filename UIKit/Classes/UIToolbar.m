@@ -33,10 +33,6 @@
 #import "UIColor.h"
 #import "UIGraphics.h"
 
-
-
-
-
 @interface UIToolbarItem : NSObject {
     UIBarButtonItem *item;
     UIView *view;
@@ -281,8 +277,8 @@
     [color setFill];
     UIRectFill(bounds);
     
-    [[UIColor blackColor] setFill];
-    UIRectFill(CGRectMake(0,0,bounds.size.width,1));
+    //[[UIColor blackColor] setFill];
+    //UIRectFill(CGRectMake(0,0,bounds.size.width,1));
 }
 
 - (NSString *)description
