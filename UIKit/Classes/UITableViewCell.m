@@ -121,8 +121,8 @@ extern CGFloat _UITableViewDefaultRowHeight;
         UITableView *tv = (UITableView *)self.superview;
         
         if ([tv.dataSource respondsToSelector:@selector(tableView:commitEditingStyle:forRowAtIndexPath:)]) {
-            contentFrame.origin.x += 44;
-            contentFrame.size.width -= 44;
+            contentFrame.origin.x += 40;
+            contentFrame.size.width -= 40;
             
             if (!deleteButton) {
                 UIImage *img = [UIImage _frameworkImageWithName:@"<UITableViewCell> remove.png" leftCapWidth:0 topCapHeight:0];
@@ -131,7 +131,7 @@ extern CGFloat _UITableViewDefaultRowHeight;
                 [deleteButton addTarget:self action:@selector(delete:) forControlEvents:UIControlEventTouchUpInside];
                 [self addSubview:deleteButton];
             }
-            deleteButton.frame = CGRectMake(0, 0, 44, bounds.size.height);
+            deleteButton.frame = CGRectMake(0, 0, 40, bounds.size.height);
         }
         
         if ([tv.dataSource respondsToSelector:@selector(tableView:moveRowAtIndexPath:toIndexPath:)]) {
