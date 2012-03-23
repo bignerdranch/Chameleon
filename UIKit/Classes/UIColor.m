@@ -37,7 +37,8 @@
 static void drawPatternImage(void *info, CGContextRef ctx)
 {
     CGImageRef image = (CGImageRef)info;
-    [[UIColor whiteColor] setFill];
+    CGFloat comps[4] = {1.0, 1.0, 1.0, 1.0};
+    CGContextSetFillColor(ctx, comps);
     CGContextFillRect(ctx, CGRectMake(0,0, CGImageGetWidth(image),CGImageGetHeight(image)));
     CGContextDrawImage(ctx, CGRectMake(0,0, CGImageGetWidth(image),CGImageGetHeight(image)), image);
 }
