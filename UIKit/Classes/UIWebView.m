@@ -91,7 +91,8 @@
         _request = [request retain];
     }
 
-    [[_webView mainFrame] loadRequest:_request];
+    [_webView setMainFrameURL:[request.URL absoluteString]];
+    //[[_webView mainFrame] loadRequest:_request];
 }
 
 - (void)stopLoading
