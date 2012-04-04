@@ -41,9 +41,9 @@
         
         _webView = [(WebView *)[WebView alloc] initWithFrame:NSRectFromCGRect(self.bounds)];
         [_webView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
-        [_webView setPolicyDelegate:self];
+        //[_webView setPolicyDelegate:self];
         [_webView setFrameLoadDelegate:self];
-        [_webView setUIDelegate:self];
+        //[_webView setUIDelegate:self];
         [_webView setDrawsBackground:NO];
 
         _webViewAdapter = [[UIViewAdapter alloc] initWithFrame:self.bounds];
