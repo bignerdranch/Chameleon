@@ -607,8 +607,8 @@ static BOOL _animationsEnabled = YES;
         }
 
         if (hasAutoresizingFor(UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin)) {
-            frame.origin.x = floorf(frame.origin.x + (frame.origin.x / oldSize.width * delta.width));
-            frame.size.width = floorf(frame.size.width + (frame.size.width / oldSize.width * delta.width));
+            frame.origin.x = frame.origin.x + (frame.origin.x / oldSize.width * delta.width); //floorf(frame.origin.x + (frame.origin.x / oldSize.width * delta.width));
+            frame.size.width = frame.size.width + (frame.size.width / oldSize.width * delta.width); //floorf(frame.size.width + (frame.size.width / oldSize.width * delta.width));
         } else if (hasAutoresizingFor(UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth)) {
             const CGFloat t = frame.origin.x + frame.size.width;
             frame.origin.x = floorf(frame.origin.x + (frame.origin.x / t * delta.width));

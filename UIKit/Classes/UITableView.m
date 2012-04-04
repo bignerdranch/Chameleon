@@ -306,6 +306,8 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
                         cell.backgroundColor = self.backgroundColor;
                         cell.editing = _editing;
                         [cell _setSeparatorStyle:_separatorStyle color:_separatorColor];
+                        if ([_delegate respondsToSelector:@selector(tableView:willDisplayCell:forRowAtIndexPath:)])
+                            [_delegate tableView:self willDisplayCell:cell forRowAtIndexPath:indexPath];
                         [self addSubview:cell];
                         
                         if (dragSelection && indexPath.section == dragSelection.section && indexPath.row == dragSelection.row)
