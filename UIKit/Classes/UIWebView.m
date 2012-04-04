@@ -153,7 +153,7 @@
 #pragma mark -
 #pragma mark WebView Policy Delegate
 
-- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id < WebPolicyDecisionListener >)listener
+/*- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id < WebPolicyDecisionListener >)listener
 {
     BOOL shouldStartLoad = NO;
     
@@ -180,10 +180,16 @@
     } else {
         [listener ignore];
     }
-}
+}*/
 
 #pragma mark -
 #pragma mark WebView Frame Load Delegate
+
+- (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame
+{
+    if ([_delegate respondsToSelector:@selector(webViewDidStartLoad:)])
+        [_delegate webViewDidStartLoad:self];
+}
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
 {
