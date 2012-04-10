@@ -78,10 +78,10 @@
         [draggingDelegate draggingEnded:sender];
 }
 
-- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
+- (BOOL)performDragOperation:(id < NSDraggingInfo >)sender
 {
-    if ([draggingDelegate respondsToSelector:@selector(prepareForDragOperation:)])
-        return [draggingDelegate prepareForDragOperation:sender];
+    if ([draggingDelegate respondsToSelector:@selector(performDragOperation:)])
+        return [draggingDelegate performDragOperation:sender];
     else
         return NO;
 }
