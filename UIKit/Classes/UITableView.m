@@ -93,6 +93,7 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
 - (void)dealloc
 {
     [_selectedRow release];
+    [_highlightedRow release];
     [_tableFooterView release];
     [_tableHeaderView release];
     [_cachedCells release];
@@ -295,6 +296,7 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
                     if (cell) {
                         [_cachedCells setObject:cell forKey:indexPath];
                         [availableCells removeObjectForKey:indexPath];
+                        cell.highlighted = [_highlightedRow isEqual:indexPath];
                         cell.selected = [_selectedRow isEqual:indexPath];
                         if (proposedDrop) {
                             if (dragSelection.section < indexPath.section || (dragSelection.section == indexPath.section && dragSelection.row < indexPath.row))
@@ -577,6 +579,8 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
     // clear prior selection
     [_selectedRow release];
     _selectedRow = nil;
+    [_highlightedRow release];
+    _highlightedRow = nil;
     
     // trigger the section cache to be repopulated
     [self _updateSectionsCache];
@@ -756,9 +760,9 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    UITouch *touch = [touches anyObject];
-    CGPoint location = [touch locationInView:self];
-    NSIndexPath *touchedRow = [self indexPathForRowAtPoint:location];
+    if (!_highlightedRow) {
+        UITouch *touch = [touches anyObject];
+        const CGPoint location = [touch locationInView:self];
 
     if (touchedRow)
         self.proposedSelection = touchedRow;
@@ -778,16 +782,71 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
     
     if (selectedRow) {
         NSIndexPath *rowToDeselect = selectedRow;
+        _highlightedRow = [[self indexPathForRowAtPoint:location] retain];
+        [self cellForRowAtIndexPath:_highlightedRow].highlighted = YES;
+    }
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    // this isn't quite how iOS seems to do it, but I think it makes sense on OSX
+    if (_highlightedRow) {
+        UITouch *touch = [touches anyObject];
+        const CGPoint location = [touch locationInView:self];
+        
+        if (!CGRectContainsPoint([self rectForRowAtIndexPath:_highlightedRow], location)) {
+            [self cellForRowAtIndexPath:_highlightedRow].highlighted = NO;
+            [_highlightedRow release];
+            _highlightedRow = nil;
+        }
+    }
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    if (_highlightedRow) {
+        NSIndexPath *selectedRow = [self indexPathForSelectedRow];
+        
+        if (selectedRow) {
+            NSIndexPath *rowToDeselect = selectedRow;
+            
+            if (_delegateHas.willDeselectRowAtIndexPath) {
+                rowToDeselect = [_delegate tableView:self willDeselectRowAtIndexPath:rowToDeselect];
+            }
+            
+            [self deselectRowAtIndexPath:rowToDeselect animated:NO];
+            
+            if (_delegateHas.didDeselectRowAtIndexPath) {
+                [_delegate tableView:self didDeselectRowAtIndexPath:rowToDeselect];
+            }
+        }
+        
+        NSIndexPath *rowToSelect = _highlightedRow;
         
         if (_delegateHas.willDeselectRowAtIndexPath) {
             rowToDeselect = [_delegate tableView:self willDeselectRowAtIndexPath:rowToDeselect];
         }
+        
+        [self cellForRowAtIndexPath:_highlightedRow].highlighted = NO;
+        [self selectRowAtIndexPath:rowToSelect animated:NO scrollPosition:UITableViewScrollPositionNone];
         
         [self deselectRowAtIndexPath:rowToDeselect animated:NO];
         
         if (_delegateHas.didDeselectRowAtIndexPath) {
             [_delegate tableView:self didDeselectRowAtIndexPath:rowToDeselect];
         }
+        
+        [_highlightedRow release];
+        _highlightedRow = nil;
+    }
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    if (_highlightedRow) {
+        [self cellForRowAtIndexPath:_highlightedRow].highlighted = NO;
+        [_highlightedRow release];
+        _highlightedRow = nil;
     }
     
     NSIndexPath *rowToSelect = touchedRow;
