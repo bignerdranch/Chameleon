@@ -43,7 +43,7 @@ void UIGraphicsPushContext(CGContextRef ctx)
     if ([NSGraphicsContext currentContext]) {
         [contextStack addObject:[NSGraphicsContext currentContext]];
     }
-
+    
     [NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithGraphicsPort:(void *)ctx flipped:YES]];
 }
 
