@@ -297,14 +297,17 @@
 // technically above all of the UIViews, they'd normally capture all clicks no matter what might happen to be obscuring them. That would obviously
 // be less than ideal. This makes it ideal. Awesome.
 - (BOOL)hitTestForClipViewPoint:(NSPoint)point
-{
+{ 
+    
     UIScreen *screen = [containerView window].screen;
     
     if (screen) {
         if (![[screen UIKitView] isFlipped]) {
             point.y = screen.bounds.size.height - point.y - 1;
         }
-        return (containerView == [[containerView window].screen _hitTest:NSPointToCGPoint(point) event:nil]);
+        
+        BOOL result = (containerView == [[containerView window].screen _hitTest:NSPointToCGPoint(point) event:nil]);
+        return result;
     }
 
     return NO;
