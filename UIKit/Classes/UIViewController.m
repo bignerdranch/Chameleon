@@ -146,6 +146,14 @@
 {
 }
 
+- (void)viewWillLayoutSubviews
+{
+}
+
+- (void)viewDidLayoutSubviews
+{
+}
+
 - (UIInterfaceOrientation)interfaceOrientation
 {
     return (UIInterfaceOrientation)UIDeviceOrientationPortrait;

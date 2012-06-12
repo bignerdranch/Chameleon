@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, The Iconfactory. All rights reserved.
+ * Copyright (c) 2012, The Iconfactory. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,9 +27,14 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <QuartzCore/CALayer.h>
+#import <Foundation/Foundation.h>
 
-@interface CALayer (UIKitCompatibility)
-- (CGFloat)contentsScale;
-- (void)setContentsScale:(CGFloat)newContentsScale;
+#define UI_APPEARANCE_SELECTOR
+
+@protocol UIAppearanceContainer <NSObject>
+@end
+
+@protocol UIAppearance <NSObject>
++ (id)appearance;
++ (id)appearanceWhenContainedIn:(Class <UIAppearanceContainer>)ContainerClass, ... NS_REQUIRES_NIL_TERMINATION;
 @end

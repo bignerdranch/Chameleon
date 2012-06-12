@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0440"
+   LastUpgradeVersion = "0450"
    version = "1.8">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -32,10 +32,13 @@
    </TestAction>
    <LaunchAction
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+<<<<<<< HEAD
 	selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+=======
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+>>>>>>> upstream/master
       displayScaleIsEnabled = "NO"
       displayScale = "1.00"
-      debugProcessAsUID = "4294967295"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Debug"
