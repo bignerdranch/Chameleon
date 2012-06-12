@@ -51,8 +51,18 @@ static CGImageSourceRef CreateCGImageSourceWithFile(NSString *imagePath)
 + (NSArray *)_imageRepsWithContentsOfFiles:(NSString *)imagePath
 {
     NSMutableArray *reps = [NSMutableArray arrayWithCapacity:2];
-    CGImageSourceRef src1X = CreateCGImageSourceWithFile(imagePath);
-    CGImageSourceRef src2X = CreateCGImageSourceWithFile([[[imagePath stringByDeletingPathExtension] stringByAppendingString:@"@2x"] stringByAppendingPathExtension:[imagePath pathExtension]]);
+    
+    CGImageSourceRef src1X = CreateCGImageSourceWithFile([[[imagePath stringByDeletingPathExtension] stringByAppendingString:@"~ipad"] stringByAppendingPathExtension:[imagePath pathExtension]]);
+    CGImageSourceRef src2X = nil;
+    
+    if (src1X) {
+        src2X = CreateCGImageSourceWithFile([[[imagePath stringByDeletingPathExtension] stringByAppendingString:@"@2x~ipad"] stringByAppendingPathExtension:[imagePath pathExtension]]);
+    } else {
+        if (src1X)
+            CFRelease(src1X);
+        src1X = CreateCGImageSourceWithFile(imagePath);
+        src2X = CreateCGImageSourceWithFile([[[imagePath stringByDeletingPathExtension] stringByAppendingString:@"@2x"] stringByAppendingPathExtension:[imagePath pathExtension]]);
+    }
 
     if (src1X) {
         UIImageRep *rep = [[UIImageRep alloc] initWithCGImageSource:src1X imageIndex:0 scale:1];

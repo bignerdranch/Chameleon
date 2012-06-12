@@ -91,43 +91,6 @@
     return [home stringByAppendingPathComponent:[[bareFilename stringByAppendingString:@"~ipad"] stringByAppendingPathExtension:extension]];
 }
 
-+ (UIImage *)_loadImageNamed:(NSString *)name
-{
-    if ([name length] > 0) {
-        NSString *macName = [self _macPathForFile:name];
-        NSString *iPadName = [self _iPadPathForFile:name];
-        
-        // first check for @mac version of the name
-        UIImage *cachedImage = [self _cachedImageForName:macName];
-        if (!cachedImage) {
-            cachedImage = [self _cachedImageForName:iPadName];
-            
-            if (!cachedImage)
-                cachedImage = [self _cachedImageForName:name];
-        }
-        
-        if (!cachedImage) {
-            // okay, we couldn't find a cached version so now lets first try to make an original with the @mac name.
-            // if that fails, try to make it with the original name.
-            NSImage *image = [NSImage imageNamed:macName];
-            if (!image) {
-                image = [NSImage imageNamed:iPadName];
-                if (!image)
-                    image = [NSImage imageNamed:name];
-            }
-            
-            if (image) {
-                cachedImage = [[[self alloc] initWithNSImage:image] autorelease];
-                [self _cacheImage:cachedImage forName:name];
-            }
-        }
-        
-        return cachedImage;
-    } else {
-        return nil;
-    }
-}
-
 - (id)initWithCGImage:(CGImageRef)imageRef scale:(CGFloat)scale orientation:(UIImageOrientation)orientation
 {
     return [self _initWithRepresentations:[NSArray arrayWithObjects:[[[UIImageRep alloc] initWithCGImage:imageRef scale:scale] autorelease], nil]];
