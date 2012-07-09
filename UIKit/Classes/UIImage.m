@@ -63,6 +63,7 @@
         [self _cacheImage:img forName:name];
     }
     
+    
     return img;
 }
 

@@ -299,6 +299,8 @@
 		8DC2EF570486A6940098B216 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		D95A49DA1513C224001E3455 /* <UITableViewCell> remove.png in Resources */ = {isa = PBXBuildFile; fileRef = D95A49D81513C224001E3455 /* <UITableViewCell> remove.png */; };
 		D95A49DB1513C224001E3455 /* <UITableViewCell> reorder.png in Resources */ = {isa = PBXBuildFile; fileRef = D95A49D91513C224001E3455 /* <UITableViewCell> reorder.png */; };
+		D9B3CD9015AB721A00FE20A2 /* <UITableViewCell> remove@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D9B3CD8F15AB721A00FE20A2 /* <UITableViewCell> remove@2x.png */; };
+		D9B3CD9315AB722100FE20A2 /* <UITableViewCell> reorder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D9B3CD9215AB722100FE20A2 /* <UITableViewCell> reorder@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -599,6 +601,8 @@
 		8DC2EF5B0486A6940098B216 /* UIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D95A49D81513C224001E3455 /* <UITableViewCell> remove.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "<UITableViewCell> remove.png"; path = "Resources/<UITableViewCell> remove.png"; sourceTree = "<group>"; };
 		D95A49D91513C224001E3455 /* <UITableViewCell> reorder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "<UITableViewCell> reorder.png"; path = "Resources/<UITableViewCell> reorder.png"; sourceTree = "<group>"; };
+		D9B3CD8F15AB721A00FE20A2 /* <UITableViewCell> remove@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "<UITableViewCell> remove@2x.png"; path = "Resources/<UITableViewCell> remove@2x.png"; sourceTree = "<group>"; };
+		D9B3CD9215AB722100FE20A2 /* <UITableViewCell> reorder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "<UITableViewCell> reorder@2x.png"; path = "Resources/<UITableViewCell> reorder@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -682,7 +686,9 @@
 				148DEE8D156E945800E7B8DE /* <UIRoundedRectButton> normal@2x.png */,
 				14CC842F11EFA8BA005988CC /* <UIScreen> grabber.png */,
 				D95A49D81513C224001E3455 /* <UITableViewCell> remove.png */,
+				D9B3CD8F15AB721A00FE20A2 /* <UITableViewCell> remove@2x.png */,
 				D95A49D91513C224001E3455 /* <UITableViewCell> reorder.png */,
+				D9B3CD9215AB722100FE20A2 /* <UITableViewCell> reorder@2x.png */,
 				148DEE8E156E945800E7B8DE /* <UIScreen> grabber@2x.png */,
 				148DEE8F156E945800E7B8DE /* <UITabBar> background.png */,
 				148DEE90156E945800E7B8DE /* <UITabBar> background@2x.png */,
@@ -1220,6 +1226,8 @@
 				1426A02515701598004C2C9A /* <UIPopoverView> arrow-left@2x.png in Resources */,
 				1426A02615701598004C2C9A /* <UIPopoverView> arrow-right@2x.png in Resources */,
 				1426A02715701598004C2C9A /* <UIPopoverView> arrow-top@2x.png in Resources */,
+				D9B3CD9015AB721A00FE20A2 /* <UITableViewCell> remove@2x.png in Resources */,
+				D9B3CD9315AB722100FE20A2 /* <UITableViewCell> reorder@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
