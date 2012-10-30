@@ -39,14 +39,14 @@
 + (UIImage *)_imageNamed:(NSString *)name
 {
     NSBundle *bundle = [NSBundle mainBundle];
-    NSString *path = [[bundle resourcePath] stringByAppendingPathComponent:name];
+    NSString *path = [bundle pathForResource:name ofType:nil];
     UIImage *img = [self imageWithContentsOfFile:path];
     
     if (!img) {
         // if nothing is found, try again after replacing any underscores in the name with dashes.
         // I don't know why, but UIKit does something similar. it probably has a good reason and it might not be this simplistic, but
         // for now this little hack makes Ramp Champ work. :)
-        path = [[[bundle resourcePath] stringByAppendingPathComponent:[[name stringByDeletingPathExtension] stringByReplacingOccurrencesOfString:@"_" withString:@"-"]] stringByAppendingPathExtension:[name pathExtension]];
+        path = [bundle pathForResource:[[name stringByDeletingPathExtension] stringByReplacingOccurrencesOfString:@"_" withString:@"-"] ofType:[name pathExtension]];
         img = [self imageWithContentsOfFile:path];
     }
     
