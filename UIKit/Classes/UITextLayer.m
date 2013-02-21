@@ -105,8 +105,13 @@
     clipView.parentLayer = self;
     clipView.behaviorDelegate = self;
 
+    /* OS X 10.8 changes something about layer geometry.
+     * This fixes text drawing problems in UITextField/View on OS X.
+     * See <URL:https://github.com/BigZaphod/Chameleon/issues/85>. */
+    self.geometryFlipped = [[[[containerView window].screen UIKitView] layer] isGeometryFlipped];
+
     [[[containerView window].screen UIKitView] addSubview:clipView];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateScrollViewContentOffset) name:NSViewBoundsDidChangeNotification object:clipView];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hierarchyDidChangeNotification:) name:UIViewFrameDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hierarchyDidChangeNotification:) name:UIViewBoundsDidChangeNotification object:nil];
