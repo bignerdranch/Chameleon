@@ -105,10 +105,18 @@
     clipView.parentLayer = self;
     clipView.behaviorDelegate = self;
 
+    
     /* OS X 10.8 changes something about layer geometry.
      * This fixes text drawing problems in UITextField/View on OS X.
-     * See <URL:https://github.com/BigZaphod/Chameleon/issues/85>. */
-    self.geometryFlipped = [[[[containerView window].screen UIKitView] layer] isGeometryFlipped];
+     * See <URL:https://github.com/BigZaphod/Chameleon/issues/85>.
+     *
+     * But doing this seems to flip the text for 10.7 and previous.
+     * So we version sniff. */
+    if ([NSColor respondsToSelector:@selector(colorWithCGColor:)]
+        && NSClassFromString(@"NSPageController") != Nil) {
+        UIKitView *hostView = [[containerView window].screen UIKitView];
+        self.geometryFlipped = [[hostView layer] isGeometryFlipped];
+    }
 
     [[[containerView window].screen UIKitView] addSubview:clipView];
 
