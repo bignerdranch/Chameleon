@@ -31,6 +31,7 @@
 #import "UIGestureRecognizerSubclass.h"
 #import "UITouch+UIPrivate.h"
 #import "UIEvent.h"
+#import <objc/runtime.h>
 
 static CGFloat DistanceBetweenTwoPoints(CGPoint A, CGPoint B)
 {
@@ -83,7 +84,8 @@ static CGFloat DistanceBetweenTwoPoints(CGPoint A, CGPoint B)
 {
     if (_waiting) {
         _waiting = NO;
-        [isa cancelPreviousPerformRequestsWithTarget:self selector:@selector(_beginGesture) object:nil];
+        Class cls = object_getClass(self);
+        [cls cancelPreviousPerformRequestsWithTarget:self selector:@selector(_beginGesture) object:nil];
     }
 }
 

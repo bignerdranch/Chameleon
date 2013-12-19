@@ -36,6 +36,7 @@
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSApplication.h>
+#import <objc/runtime.h>
 
 NSString *const UIMenuControllerWillShowMenuNotification = @"UIMenuControllerWillShowMenuNotification";
 NSString *const UIMenuControllerDidShowMenuNotification = @"UIMenuControllerDidShowMenuNotification";
@@ -194,7 +195,8 @@ NSString *const UIMenuControllerMenuFrameDidChangeNotification = @"UIMenuControl
 {
     UIApplication *app = [UIApplication sharedApplication];
     UIResponder *firstResponder = [app.keyWindow _firstResponder];
-    NSArray *allItems = [[isa _defaultMenuItems] arrayByAddingObjectsFromArray:_menuItems];
+    Class cls = object_getClass(self);
+    NSArray *allItems = [[cls _defaultMenuItems] arrayByAddingObjectsFromArray:_menuItems];
 
     [_enabledMenuItems removeAllObjects];
 
