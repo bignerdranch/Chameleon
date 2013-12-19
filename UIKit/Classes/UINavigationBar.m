@@ -38,6 +38,7 @@
 #import "UIImage+UIPrivate.h"
 #import "UIBarButtonItem.h"
 #import "UIButton.h"
+#import <objc/runtime.h>
 
 static const UIEdgeInsets kButtonEdgeInsets = {0,0,0,0};
 static const CGFloat kMinButtonWidth = 30;
@@ -199,11 +200,12 @@ typedef enum {
 
         CGRect leftFrame = CGRectZero;
         CGRect rightFrame = CGRectZero;
-        
+
+        Class cls = object_getClass(self);
         if (backItem) {
-            _leftView = [isa _backButtonWithBarButtonItem:backItem.backBarButtonItem];
+            _leftView = [cls _backButtonWithBarButtonItem:backItem.backBarButtonItem];
         } else {
-            _leftView = [isa _viewWithBarButtonItem:topItem.leftBarButtonItem];
+            _leftView = [cls _viewWithBarButtonItem:topItem.leftBarButtonItem];
         }
 
         if (_leftView) {
@@ -213,7 +215,7 @@ typedef enum {
             [self addSubview:_leftView];
         }
 
-        _rightView = [isa _viewWithBarButtonItem:topItem.rightBarButtonItem];
+        _rightView = [cls _viewWithBarButtonItem:topItem.rightBarButtonItem];
 
         if (_rightView) {
             _rightView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
