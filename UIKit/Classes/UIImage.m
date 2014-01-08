@@ -222,16 +222,32 @@ BOOL UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(NSString *videoPath)
 NSData *UIImageJPEGRepresentation(UIImage *image, CGFloat compressionQuality)
 {
     CFMutableDataRef data = CFDataCreateMutable(NULL, 0);
-    CGImageDestinationRef dest = CGImageDestinationCreateWithData(data, kUTTypeJPEG, 1, NULL);
-    CFNumberRef quality = CFNumberCreate(NULL, kCFNumberCGFloatType, &compressionQuality);
-    CFStringRef keys[] = { kCGImageDestinationLossyCompressionQuality };
-    CFTypeRef values[] = { quality };
-    CFDictionaryRef properties = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 1, NULL, NULL);
+    CGImageDestinationRef dest = CGImageDestinationCreateWithData(
+        data, kUTTypeJPEG, 1/*count*/, NULL/*options*/);
+
+    CFDictionaryRef properties = ({
+        CFStringRef keys[] = { kCGImageDestinationLossyCompressionQuality };
+
+        CFNumberRef quality = CFNumberCreate(
+            kCFAllocatorDefault, kCFNumberCGFloatType, &compressionQuality);
+        CFTypeRef values[] = { quality };
+
+        properties = CFDictionaryCreate(kCFAllocatorDefault,
+            (const void **)&keys,(const void **)&values, 1,
+            &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+        CFRelease(quality);
+        properties;
+    });
     CGImageDestinationAddImage(dest, image.CGImage, properties);
     CFRelease(properties);
-    CFRelease(quality);
-    CGImageDestinationFinalize(dest);
+
+    bool ok = CGImageDestinationFinalize(dest);
+    if (!ok) {
+        NSLog(@"ERROR: failed to convert image %@ to JPEG of quality %f",
+              image, compressionQuality);
+    }
     CFRelease(dest);
+
     return [(__bridge NSData *)data autorelease];
 }
 
