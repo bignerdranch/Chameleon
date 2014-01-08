@@ -55,7 +55,7 @@
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     CGFloat locations[2] = {0.f, 1.f};
     const void *colors[2] = {startColor.CGColor, endColor.CGColor};
-    CFArrayRef gradientColors = CFArrayCreate(NULL, colors, 2, NULL);
+    CFArrayRef gradientColors = CFArrayCreate(NULL, colors, 2, &kCFTypeArrayCallBacks);
     CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, gradientColors, locations);
     CGColorSpaceRelease(colorSpace);
     CGContextDrawLinearGradient(UIGraphicsGetCurrentContext(), gradient, CGPointMake(0.f, 1.f), CGPointMake(0.f, size.height - 1.f), 0);
