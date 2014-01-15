@@ -51,17 +51,44 @@ static CGImageSourceRef CreateCGImageSourceWithFile(NSString *imagePath)
 + (NSArray *)_imageRepsWithContentsOfFiles:(NSString *)imagePath
 {
     NSMutableArray *reps = [NSMutableArray arrayWithCapacity:2];
-    
-    CGImageSourceRef src1X = CreateCGImageSourceWithFile([[[imagePath stringByDeletingPathExtension] stringByAppendingString:@"~ipad"] stringByAppendingPathExtension:[imagePath pathExtension]]);
+
+    NSMutableString *stem = [[imagePath stringByDeletingPathExtension]
+                             mutableCopy];
+    NSString *ext = [imagePath pathExtension];
+
+    if ([stem hasSuffix:@"~ipad"]) {
+        NSUInteger length = @"~ipad".length;
+        [stem deleteCharactersInRange:
+         NSMakeRange(stem.length - length, length)];
+    }
+    if ([stem hasSuffix:@"@2x"]) {
+        NSUInteger length = @"@2x".length;
+        [stem deleteCharactersInRange:
+         NSMakeRange(stem.length - length, length)];
+    }
+
+    NSString *path1XiPad = [[stem stringByAppendingString:@"~ipad"]
+                            stringByAppendingPathExtension:ext];
+    CGImageSourceRef src1X = CreateCGImageSourceWithFile(path1XiPad);
     CGImageSourceRef src2X = nil;
-    
+
+    NSString *path1X;
+    NSString *path2X;
     if (src1X) {
-        src2X = CreateCGImageSourceWithFile([[[imagePath stringByDeletingPathExtension] stringByAppendingString:@"@2x~ipad"] stringByAppendingPathExtension:[imagePath pathExtension]]);
+        path1X = path1XiPad;
+        path2X = [[stem stringByAppendingString:@"@2x~ipad"]
+                  stringByAppendingPathExtension:ext];
+        src2X = CreateCGImageSourceWithFile(path2X);
     } else {
         if (src1X)
             CFRelease(src1X);
-        src1X = CreateCGImageSourceWithFile(imagePath);
-        src2X = CreateCGImageSourceWithFile([[[imagePath stringByDeletingPathExtension] stringByAppendingString:@"@2x"] stringByAppendingPathExtension:[imagePath pathExtension]]);
+
+        path1X = imagePath;
+        src1X = CreateCGImageSourceWithFile(path1X);
+
+        path2X = [[stem stringByAppendingString:@"@2x"]
+                  stringByAppendingPathExtension:ext];
+        src2X = CreateCGImageSourceWithFile(path2X);
     }
 
     if (src1X) {
@@ -76,7 +103,6 @@ static CGImageSourceRef CreateCGImageSourceWithFile(NSString *imagePath)
         [rep release];
         CFRelease(src2X);
     }
-    
     return ([reps count] > 0)? reps : nil;
 }
 
